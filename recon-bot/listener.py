@@ -5,7 +5,7 @@ import os
 
 #define slack api token and fb access token here
 slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
-alerter = Alerter('666434090858702|Ypbru4ktL06iaUTYBf4_lwC99VQ', '666434090858702')
+alerter = Alerter(os.environ["FB_ACCESS_TOKEN"], '666434090858702')
 
 app = Flask(__name__)
 
@@ -13,6 +13,7 @@ app = Flask(__name__)
 def add():
     if request.method == 'POST':
         domain = request.args['text']
+        print(domain)
         response = alerter.addDomain(domain)
         if response == True:
             slack.chat.post_message('#subdomain-alerts', "Successfully added " + domain)
