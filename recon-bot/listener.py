@@ -1,9 +1,10 @@
 from slacker import Slacker
 from flask import Flask, request, abort
 from ctapi import Alerter
+import os
 
 #define slack api token and fb access token here
-slack = Slacker('xoxb-1069747671397-1069754474277-85D873Dili8hcATNVnRo9ic0')
+slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
 alerter = Alerter('666434090858702|Ypbru4ktL06iaUTYBf4_lwC99VQ', '666434090858702')
 
 app = Flask(__name__)
@@ -12,16 +13,20 @@ app = Flask(__name__)
 def add():
     if request.method == 'POST':
         domain = request.args['text']
-        res = alerter.addDomain(domain)
-        if res == True:
+        response = alerter.addDomain(domain)
+        if response == True:
             slack.chat.post_message('#subdomain-alerts', "Successfully added " + domain)
         else:
             slack.chat.post_message('#subdomain-alerts', "Could not add " + domain)
+        return response, 200
+    else:
+        print("Failed")
 
 @app.route('/list-domains', methods=['POST'])
 def list():
     if request.method == 'POST':
         slack.chat.post_message('#subdomain-alerts', "List of subdomains: " + alerter.listDomains())
+        return '', 200
 
 @app.route('/subdomain-alert', methods=['GET', 'POST'])
 def webhook():
