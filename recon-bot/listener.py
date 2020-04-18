@@ -22,10 +22,10 @@ def add():
     if request.method == 'POST':
         response = alerter.addDomain(request.form['text'])
         if response is True:
-            slack.chat.post_message('#subdomain-alerts', "Successfully added " + domain)
+            slack.chat.post_message('#subdomain-alerts', "Successfully added " + request.form['text'])
             return '', 200
         else:
-            slack.chat.post_message('#subdomain-alerts', "Could not add " + domain)
+            slack.chat.post_message('#subdomain-alerts', "Could not add " + request.form['text'])
             return 'Error', 200
     else:
         print("Failed")
