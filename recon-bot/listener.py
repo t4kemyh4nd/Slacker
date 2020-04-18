@@ -27,7 +27,7 @@ def list():
     if request.method == 'POST':
         domains = alerter.listDomains()
         for domain in domains:
-            slack.chat.post_message('#subdomain-alerts', domain)
+            slack.chat.post_message('#subdomain-alerts', domain['domain'])
         return '', 200
 
 @app.route('/subdomain-alert', methods=['GET', 'POST'])
