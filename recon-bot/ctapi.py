@@ -20,7 +20,7 @@ class Alerter:
             payload = {'fields': 'domain', 'access_token': self.access_token}
             response = json.loads(requests.get("https://graph.facebook.com/" + self.app_id + "/subscribed_domains", params = payload).text)
             for i in response['data']:
-                return i['domain']
+		return i['domain']
         except:
             print("Error in listing subscribed domains")
 
@@ -32,3 +32,6 @@ class Alerter:
                 return True
         except:
             return response
+
+alerter = Alerter('666434090858702|Ypbru4ktL06iaUTYBf4_lwC99VQ', '666434090858702')
+alerter.listDomains()

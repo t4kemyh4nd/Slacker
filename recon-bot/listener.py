@@ -25,7 +25,9 @@ def add():
 @app.route('/list-domains', methods=['POST'])
 def list():
     if request.method == 'POST':
-        slack.chat.post_message('#subdomain-alerts', "List of subdomains: " + alerter.listDomains())
+        domains = alerter.listDomains()
+        for domain in domains:
+            slack.chat.post_message('#subdomain-alerts', domain)
         return '', 200
 
 @app.route('/subdomain-alert', methods=['GET', 'POST'])
