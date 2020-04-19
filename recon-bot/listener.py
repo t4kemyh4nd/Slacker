@@ -32,7 +32,7 @@ def add():
         print("Failed")
 
 @app.route('/remove-domain', methods=['POST'])
-def add():
+def remove():
     if request.method == 'POST':
         response = alerter.removeDomain(request.form['text'])
         if response is True:
