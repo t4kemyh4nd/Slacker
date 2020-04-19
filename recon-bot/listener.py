@@ -31,6 +31,19 @@ def add():
     else:
         print("Failed")
 
+@app.route('/remove-domain', methods=['POST'])
+def add():
+    if request.method == 'POST':
+        response = alerter.removeDomain(request.form['text'])
+        if response is True:
+            slack.chat.post_message('#subdomain-alerts', "Successfully removed " + request.form['text'])
+            return '', 200
+        else:
+            slack.chat.post_message('#subdomain-alerts', "Could not remove " + request.form['text'])
+            return 'Error', 200
+    else:
+        print("Failed")
+
 @app.route('/subdomain-alert', methods=['GET', 'POST'])
 def webhook():
     if request.method == 'POST':
