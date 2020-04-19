@@ -48,13 +48,17 @@ class Alerter:
 
     @staticmethod
     def readDomainFromCert(cert):
+        tempfilename = 'test' + str(random.randrange(20, 50, 1))
+        open(tempfilename, 'w').write(cert)
         filename = 'test' + str(random.randrange(20, 50, 1)) + '.pem'
-        file = open(filename, 'w')
-        for line in cert.splitlines():
-            file.write(line.strip())
-        file.close()
+        with open(filename, 'w') as file:
+            with open(tempfilename, 'r') as tempfile:
+                for line in tempfile.read().splitlines():
+                    file.write(line.strip() + "\n")
         cert_file = filename
         cert = crypto.load_certificate(crypto.FILETYPE_PEM, open(cert_file).read())
         subject = cert.get_subject()
+        os.remove(tempfilename)
+        os.remove(filename)
         issued_to = subject.CN
         return issued_to
