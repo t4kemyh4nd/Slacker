@@ -1,6 +1,7 @@
 from slacker import Slacker
 from flask import Flask, request, abort
 from ctapi import Alerter
+import os
 
 #define slack api token and fb access token here
 slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
