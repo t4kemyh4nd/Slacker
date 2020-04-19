@@ -1,6 +1,9 @@
 import requests
 import json
+import os
 from datetime import datetime
+from OpenSSL import crypto
+import random
 
 class Alerter:
     def __init__(self, access_token, app_id):
@@ -42,3 +45,16 @@ class Alerter:
                 print(date['not_valid_before'].split("T")[0])
         except:
             print("Error in getting new certificates")
+
+    @staticmethod
+    def readDomainFromCert(cert):
+        filename = 'test' + str(random.randrange(20, 50, 1)) + '.pem'
+        file = open(filename, 'rw')
+        file.write(cert)
+        file.close()
+        cert_file = filename
+        cert = crypto.load_certificate(crypto.FILETYPE_PEM, open(cert_file).read())
+        subject = cert.get_subject()
+        issued_to = subject.CN
+        os.remove(filename)
+        return issued_to

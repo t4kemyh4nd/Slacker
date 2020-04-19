@@ -1,7 +1,6 @@
 from slacker import Slacker
 from flask import Flask, request, abort
 from ctapi import Alerter
-import os
 
 #define slack api token and fb access token here
 slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
@@ -48,9 +47,9 @@ def remove():
 def webhook():
     if request.method == 'POST':
         print(request.get_json())
-        if "certificate" in request.get_json()["entry"][0]["changed_fields"]:
-            for domain in alerter.listDomains():
-                Alerter.checkNewCert(domain)
+        if "certificate" in request.get_json()["entry"][0]["changes"][0]["field"]:
+            domain = Alerter.readDomainFromCert(request.get_json()["entry"][0]["changes"][0]["value"]["certificate_pem"])
+            slack.chat.post_message('#subdomain-alerts', "New certificate added for " + domain)
             return '', 200
     elif request.method == 'GET':
         return str(request.args['hub.challenge']), 200
