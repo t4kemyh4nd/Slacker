@@ -49,7 +49,7 @@ class Alerter:
     @staticmethod
     def readDomainFromCert(cert):
         filename = 'test' + str(random.randrange(20, 50, 1)) + '.pem'
-        file = open(filename, 'rw')
+        file = open(filename, 'w')
         file.write(cert)
         file.close()
         cert_file = filename
