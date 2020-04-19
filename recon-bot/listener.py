@@ -13,6 +13,7 @@ app = Flask(__name__)
 def list():
     if request.method == 'POST':
         domains = alerter.listDomains()
+        slack.chat.post_message('#subdomain-alerts', "List of subscribed domains")
         for domain in domains:
             slack.chat.post_message('#subdomain-alerts', domain['domain'])
         return '', 200
@@ -32,10 +33,14 @@ def add():
 
 @app.route('/subdomain-alert', methods=['GET', 'POST'])
 def webhook():
-    if request.method == 'GET':
+    if request.method == 'POST':
+        print(request.get_json())
+        if "certificate" in request.get_json()["entry"][0]["changed_fields"]:
+            for domain in alerter.listDomains():
+                Alerter.checkNewCert(domain)
+            return '', 200
+    elif request.method == 'GET':
         return str(request.args['hub.challenge']), 200
-    elif request.method == 'POST':
-        print(request.json[''])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

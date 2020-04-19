@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 class Alerter:
     def __init__(self, access_token, app_id):
@@ -31,3 +32,13 @@ class Alerter:
                 return True
         except:
             return response
+
+    def checkNewCert(self, domain):
+        try:
+            today = datetime.today().strftime('%Y-%m-%d')
+            payload = {'query': domain, 'fields': 'not_valid_before', 'access_token': self.access_token}
+            response = json.loads(requests.get("https://graph.facebook.com/v6.0/certificates", params = payload).text)
+            for date in response['data']:
+                print(date['not_valid_before'].split("T")[0])
+        except:
+            print("Error in getting new certificates")
