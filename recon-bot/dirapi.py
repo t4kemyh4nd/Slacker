@@ -40,8 +40,10 @@ class DirAlert:
         scanDirs(self.domain)
 
     def compareResults(self):
-        oldPaths = col.find({"domain": self.domain}, {"_id": 0, "paths": 1})
         if "http://" in self.domain:
+            oldPaths = dict()
+            for x in col.find({"domain": self.domain}, {"_id": 0, "paths": 1}):
+                oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
             os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200")
@@ -53,6 +55,9 @@ class DirAlert:
                         newPaths.append(result["path"])
             os.remove("/tmp/" + filename)
         elif "https://" in self.domain:
+            oldPaths = dict()
+            for x in col.find({"domain": self.domain}, {"_id": 0, "paths": 1}):
+                oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
             os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200")
@@ -68,8 +73,11 @@ class DirAlert:
         
     def createAlerts(self):
         #schedule.every().day.at("10:30").do(self.compareResults(domain))
-        schedule.every(2).minutes.do(self.compareResults, self.domain)
+        schedule.every(1).minutes.do(self.compareResults)
 
 
 siteAlerter =  DirAlert("http://blog.takemyhand.xyz")
-siteAlerter.compareResults()
+siteAlerter.createAlerts()
+
+while True:
+    schedule.run_pending()
