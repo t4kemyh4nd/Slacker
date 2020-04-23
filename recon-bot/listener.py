@@ -69,11 +69,12 @@ def addDirscan():
             for x in col.find({"domain": request.form['text']}, {"domain": 1}):
                 domain = x['domain']
             if not domain:
-                slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
+                slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
                 return '', 200
+                print(request.form['text'])
                 dirapi.DirAlert(request.form['text'])
             else:
-                slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
+                slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
                 return '', 200
         except:
             slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
