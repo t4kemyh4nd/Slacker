@@ -13,9 +13,12 @@ col = db["domains"]
 webhook = os.environ["SLACK_WEBHOOK_URL"]
 
 def scanDirs(domain):
-    
+    port = str()
     if "http://" in domain:
-        port = domain.split(":")[2]
+        try:
+            port = domain.split(":")[2]
+        except:
+            port = "80"
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
         os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
@@ -28,13 +31,17 @@ def scanDirs(domain):
             col.insert({"domain": domain, "paths": paths}, check_keys = False)
         os.remove("/tmp/" + filename)
     elif "https://" in domain:
+        try:
+            port = domain.split(":")[2]
+        except:
+            port = "443"
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
         os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
-            for result in results[domain + ":443/"]:
+            for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
                 if result["status"] not in [400]:
                     paths.append(result["path"])
             col.insert({"domain": domain, "paths": paths}, check_keys = False)
@@ -49,7 +56,12 @@ class DirAlert:
             schedule.run_pending()
 
     def compareResults(self):
+        port = str()
         if "http://" in self.domain:
+            try:
+                port = domain.split(":")[2]
+            except:
+                port = "80"
             oldPaths = dict()
             for x in col.find({"domain": self.domain}, {"_id": 0, "paths": 1}):
                 oldPaths = x['paths']
@@ -59,11 +71,19 @@ class DirAlert:
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
-                for result in results[self.domain + ":80/"]:
+                for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
                     if result["status"] not in [400]:
                         newPaths.append(result["path"])
+                if newPaths is not oldPaths:
+                    col.update_one({"domain": self.domain}, {"$set": {"paths": newPaths}})
+                for path in list(set(newPaths) - set(oldPaths)):
+                    requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
             os.remove("/tmp/" + filename)
         elif "https://" in self.domain:
+            try:
+                port = domain.split(":")[2]
+            except:
+                port = "443"          
             oldPaths = dict()
             for x in col.find({"domain": self.domain}, {"_id": 0, "paths": 1}):
                 oldPaths = x['paths']
@@ -73,14 +93,14 @@ class DirAlert:
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
-                for result in results[self.domain + ":443/"]:
+                for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
                     if result["status"] not in [400]:
                         newPaths.append(result["path"])
+                if newPaths is not oldPaths:
+                    col.update_one({"domain": self.domain}, {"$set": {"paths": newPaths}})
+                for path in list(set(newPaths) - set(oldPaths)):
+                    requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})                     
             os.remove("/tmp/" + filename)
-        if newPaths is not oldPaths:
-            col.update_one({"domain": self.domain}, {"$set": {"paths": newPaths}})
-            for path in list(set(newPaths) - set(oldPaths)):
-                requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
         
     def createAlerts(self):
         schedule.every().day.at("10:30").do(self.compareResults)
