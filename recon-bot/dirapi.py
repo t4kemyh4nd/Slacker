@@ -16,7 +16,7 @@ def scanDirs(domain):
     if "http://" in domain:
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
-        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b")
+        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
@@ -28,7 +28,7 @@ def scanDirs(domain):
     elif "https://" in domain:
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
-        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b")
+        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
@@ -53,7 +53,7 @@ class DirAlert:
                 oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
-            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b")
+            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
@@ -67,7 +67,7 @@ class DirAlert:
                 oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
-            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b")
+            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
@@ -81,4 +81,4 @@ class DirAlert:
                 requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
         
     def createAlerts(self):
-        schedule.every().day.at("10:30").do(self.compareResults(domain))
+        schedule.every().day.at("10:30").do(self.compareResults(self.domain))
