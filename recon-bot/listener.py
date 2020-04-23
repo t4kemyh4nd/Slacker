@@ -4,6 +4,7 @@ from ctapi import Alerter
 import os
 import dirapi
 import pymongo
+from threading import Thread
 
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
@@ -63,24 +64,22 @@ def webhook():
 
 @app.route('/add-dirscan', methods=['POST'])
 def addDirscan():
-    if request.method == 'POST':
-        try:
-            domain = str()
-            for x in col.find({"domain": request.form['text']}, {"domain": 1}):
-                domain = x['domain']
-            if not domain:
-                slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
-                return '', 200
-                print(request.form['text'])
-                dirapi.DirAlert(request.form['text'])
-            else:
-                slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
-                return '', 200
-        except:
-            slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
+    try:
+        domain = str()
+        for x in col.find({"domain": request.form['text']}, {"domain": 1}):
+            domain = x['domain']
+        if not domain:
+            slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
+            print(request.form['text'])
+            thread = Thread(target = dirapi.DirAlert, args = request.form['text'])
+            thread.start
             return '', 200
-    else:
-        print("Failed")
+        else:
+            slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
+            return '', 200
+    except:
+        slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
+        return '', 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
