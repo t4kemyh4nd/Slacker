@@ -71,7 +71,7 @@ class DirAlert:
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
-                for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
+                for result in results[self.domain.split(":")[0] + ":" + self.domain.split(":")[1] + ":" + port + "/"]:
                     if result["status"] not in [400]:
                         newPaths.append(result["path"])
                 if newPaths is not oldPaths:
@@ -93,7 +93,7 @@ class DirAlert:
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
-                for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
+                for result in results[self.domain.split(":")[0] + ":" + self.domain.split(":")[1] + ":" + port + "/"]:
                     if result["status"] not in [400]:
                         newPaths.append(result["path"])
                 if newPaths is not oldPaths:
