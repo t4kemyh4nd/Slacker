@@ -2,6 +2,12 @@ from slacker import Slacker
 from flask import Flask, request, abort
 from ctapi import Alerter
 import os
+import dirapi
+import pymongo
+
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["dirscan"]
+col = db["domains"]
 
 #define slack api token and fb access token here
 slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
@@ -54,6 +60,19 @@ def webhook():
             return '', 200
     elif request.method == 'GET':
         return str(request.args['hub.challenge']), 200
+
+@app.route('/add-dirscan', methods=['POST'])
+def remove():
+    if request.method == 'POST':
+        try:
+            dirapi.DirAlert(request.form['text'])
+            slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
+            return '', 200
+        except:
+            slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
+            return '', 200
+    else:
+        print("Failed")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
