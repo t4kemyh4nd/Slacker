@@ -62,12 +62,19 @@ def webhook():
         return str(request.args['hub.challenge']), 200
 
 @app.route('/add-dirscan', methods=['POST'])
-def remove():
+def addDirscan():
     if request.method == 'POST':
         try:
-            dirapi.DirAlert(request.form['text'])
-            slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
-            return '', 200
+            domain = str()
+            for x in col.find({"domain": request.form['text']}, {"domain": 1}):
+                domain = x['domain']
+            if not domain:
+                slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
+                return '', 200
+                dirapi.DirAlert(request.form['text'])
+            else:
+                slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
+                return '', 200
         except:
             slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
             return '', 200

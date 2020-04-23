@@ -10,6 +10,8 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
 col = db["domains"]
 
+webhook = os.environ["SLACK_WEBHOOK_URL"]
+
 def scanDirs(domain):
     if "http://" in domain:
         filename = str(time.time())
@@ -76,8 +78,7 @@ class DirAlert:
         if newPaths is not oldPaths:
             col.update_one({"domain": self.domain}, {"$set": {"paths": newPaths}})
             for path in list(set(newPaths) - set(oldPaths)):
-                requests.post("https://hooks.slack.com/services/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", json = {"text": path})
+                requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
         
     def createAlerts(self):
-        #schedule.every().day.at("10:30").do(self.compareResults(domain))
-        schedule.every(1).minutes.do(self.compareResults)
+        schedule.every().day.at("10:30").do(self.compareResults(domain))
