@@ -59,7 +59,7 @@ class DirAlert:
         port = str()
         if "http://" in self.domain:
             try:
-                port = domain.split(":")[2]
+                port = self.domain.split(":")[2]
             except:
                 port = "80"
             oldPaths = dict()
@@ -81,7 +81,7 @@ class DirAlert:
             os.remove("/tmp/" + filename)
         elif "https://" in self.domain:
             try:
-                port = domain.split(":")[2]
+                port = self.domain.split(":")[2]
             except:
                 port = "443"          
             oldPaths = dict()
