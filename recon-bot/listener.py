@@ -71,8 +71,8 @@ def addDirscan():
         if not domain:
             slack.chat.post_message('#dirscan-alerts', "Added " + request.form['text'] + " for directory monitoring")
             print(request.form['text'])
-            thread = Thread(target = dirapi.DirAlert, args = request.form['text'])
-            thread.start
+            thread = Thread(target = dirapi.DirAlert, args = (request.form['text'], ))
+            thread.start()
             return '', 200
         else:
             slack.chat.post_message('#dirscan-alerts', "Already added " + request.form['text'] + " for directory monitoring")
