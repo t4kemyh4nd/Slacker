@@ -10,8 +10,7 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
 col = db["domains"]
 
-webhook = "https://hooks.slack.com/services/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"
-# webhook = os.environ["SLACK_WEBHOOK_URL"]
+webhook = os.environ["SLACK_WEBHOOK_URL"]
 
 def scanDirs(domain):
     if "http://" in domain:
