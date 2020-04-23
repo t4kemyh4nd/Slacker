@@ -81,4 +81,4 @@ class DirAlert:
                 requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
         
     def createAlerts(self):
-        schedule.every().day.at("10:30").do(self.compareResults(self.domain))
+        schedule.every().day.at("10:30").do(self.compareResults, self.domain)
