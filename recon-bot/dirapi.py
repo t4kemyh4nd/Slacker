@@ -13,14 +13,16 @@ col = db["domains"]
 webhook = os.environ["SLACK_WEBHOOK_URL"]
 
 def scanDirs(domain):
+    
     if "http://" in domain:
+        port = domain.split(":")[2]
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
         os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
-            for result in results[domain + ":80/"]:
+            for result in results[domain + ":" + port + "/"]:
                 if result["status"] not in [400]:
                     paths.append(result["path"])
             col.insert({"domain": domain, "paths": paths}, check_keys = False)
