@@ -22,7 +22,7 @@ def scanDirs(domain):
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
-            for result in results[domain.split(":")[0] + domain.split(":")[1] + ":" + port + "/"]:
+            for result in results[domain.split(":")[0] + ":" + domain.split(":")[1] + ":" + port + "/"]:
                 if result["status"] not in [400]:
                     paths.append(result["path"])
             col.insert({"domain": domain, "paths": paths}, check_keys = False)
@@ -83,4 +83,4 @@ class DirAlert:
                 requests.post(webhook, json = {"text": "New path for " + self.domain + " added: /" + path})
         
     def createAlerts(self):
-        schedule.every().day.at("10:30").do(self.compareResults, self.domain)
+        schedule.every().day.at("10:30").do(self.compareResults)
