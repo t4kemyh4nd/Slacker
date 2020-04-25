@@ -84,9 +84,8 @@ def addDirscan():
 @app.route('/list-dirscan', methods=['POST'])
 def listDirscan():
     try:
-        slack.chat.post_message('#dirscan-alerts', "List of subdomains for directory scanning: ")
         domain = str()
-        for x in col.find({"domain": request.form['text']}, {"domain": 1}):
+        for x in col.find({}, {"domain": 1}):
             domain = x['domain']
             slack.chat.post_message('#dirscan-alerts', domain)
         return '', 200
