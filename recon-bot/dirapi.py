@@ -10,8 +10,8 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
 col = db["domains"]
 
-dirsearchPath = os.environ["DIRSEARCH_PATH"]
-webhook = os.environ["SLACK_WEBHOOK_URL"]
+dirsearchPath = json.load(open('config', 'r').read())['DIRSEARCH_PATH']
+webhook = json.load(open('config', 'r').read())['SLACK_WEBHOOK_URL']
 
 def scanDirs(domain):
     port = str()

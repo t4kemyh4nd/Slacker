@@ -1,18 +1,22 @@
 from slacker import Slacker
 from flask import Flask, request, abort
 from ctapi import Alerter
-import os
 import dirapi
 import pymongo
 from threading import Thread
+import json
 
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
 col = db["domains"]
 
+SLACK_BOT_TOKEN = json.load(open('config', 'r').read())['SLACK_BOT_TOKEN']
+FB_ACCESS_TOKEN = json.load(open('config', 'r').read())['FB_ACCESS_TOKEN']
+FB_APP_ID = json.load(open('config', 'r').read())['FB_APP_ID']
+
 #define slack api token and fb access token here
-slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
-alerter = Alerter(os.environ["FB_ACCESS_TOKEN"], ["FB_APP_ID"])
+slack = Slacker(SLACK_BOT_TOKEN)
+alerter = Alerter(FB_ACCESS_TOKEN, FB_APP_ID)
 
 app = Flask(__name__)
 
