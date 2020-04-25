@@ -10,6 +10,7 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client["dirscan"]
 col = db["domains"]
 
+dirsearchPath = os.environ["DIRSEARCH_PATH"]
 webhook = os.environ["SLACK_WEBHOOK_URL"]
 
 def scanDirs(domain):
@@ -21,7 +22,7 @@ def scanDirs(domain):
             port = "80"
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
-        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
+        os.system("python3 " + dirsearchPath + " -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
@@ -37,7 +38,7 @@ def scanDirs(domain):
             port = "443"
         filename = str(time.time())
         os.system("touch /tmp/" + filename)
-        os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
+        os.system("python3 " + dirsearchPath + " -u " + domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
         with open("/tmp/" + filename, 'r') as f:
             results = json.load(f)
             paths = []
@@ -67,7 +68,7 @@ class DirAlert:
                 oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
-            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
+            os.system("python3 " + dirsearchPath + " -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []
@@ -89,7 +90,7 @@ class DirAlert:
                 oldPaths = x['paths']
             filename = str(time.time())
             os.system("touch /tmp/" + filename)
-            os.system("python3 /Users/prey4/Pentesting/dirsearch/dirsearch.py -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
+            os.system("python3 " + dirsearchPath + " -u " + self.domain + " --json-report=/tmp/" + filename + " -e * --threads 200 -b > /dev/null")
             with open("/tmp/" + filename, 'r') as f:
                 results = json.load(f)
                 newPaths = []

@@ -12,7 +12,7 @@ col = db["domains"]
 
 #define slack api token and fb access token here
 slack = Slacker(os.environ["SLACK_BOT_TOKEN"])
-alerter = Alerter(os.environ["FB_ACCESS_TOKEN"], '666434090858702')
+alerter = Alerter(os.environ["FB_ACCESS_TOKEN"], ["FB_APP_ID"])
 
 app = Flask(__name__)
 
@@ -79,6 +79,22 @@ def addDirscan():
             return '', 200
     except:
         slack.chat.post_message('#dirscan-alerts', "Couldn't add " + request.form['text'] + " for directory monitoring")
+        return '', 200
+
+@app.route('/list-dirscan', methods=['POST'])
+def listDirscan():
+    try:
+        slack.chat.post_message('#dirscan-alerts', "List of subdomains for directory scanning: ")
+        domain = str()
+        for x in col.find({"domain": request.form['text']}, {"domain": 1}):
+            domain = x['domain']
+            slack.chat.post_message('#dirscan-alerts', domain)
+        return '', 200
+        if not domain:
+            slack.chat.post_message('#dirscan-alerts', "No domains added for monitoring")
+            return '', 200
+    except:
+        slack.chat.post_message('#dirscan-alerts', "Couldn't list domains")
         return '', 200
 
 if __name__ == '__main__':
