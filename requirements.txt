@@ -2,3 +2,4 @@ schedule
 pymongo
 slacker
 flask
+pyopenssl
